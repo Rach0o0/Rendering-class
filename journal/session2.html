@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Session 2 — Ray Tracing</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="subpage-header">
+    <h1>Session 2 — Ray Tracing</h1>
+    <p>
+      In this session we extended our ray casting program into a real ray tracer.  
+      We added shadows, reflections, refractions, and more advanced surface models like Phong and glossy shading.  
+      This made the scene much more realistic and dynamic.
+    </p>
+  </header>
+
+  <main class="session-content">
+
+    <!-- Exercise 1 -->
+    <section class="exercise" id="ex1">
+      <h2>Exercise 1 — Hard Shadows</h2>
+      <p>
+        We made the objects cast shadows by sending a new ray from each surface point toward the light source.  
+        If another object blocked the light, the surface stayed in shadow and only received the ambient term.  
+        Otherwise, both the ambient and diffuse parts were added.  
+        This gave a clear sense of depth and made the objects look more solid under lighting.
+      </p>
+      <img src="images/w2_ex1.png" alt="Hard shadows result" />
+      <a class="code-link" href="w2_version1.html" target="_blank">Open version 1</a>
+    </section>
+
+    <!-- Exercise 2 -->
+    <section class="exercise" id="ex2">
+      <h2>Exercise 2 — Mirror Reflection and Shader Selection</h2>
+      <p>
+        We implemented mirror reflection so that the sphere could act as a reflective surface.  
+        When a ray hit the sphere, we computed the reflected direction and traced a new ray along that path.  
+        The loop continued until no new reflection was needed or a maximum depth was reached.  
+        We also created a general shading function and a menu that allows selecting different shaders for the sphere and the matte surfaces.
+      </p>
+      <img src="images/w2_ex2.png" alt="Mirror reflection result" />
+      <a class="code-link" href="w2_version2.html" target="_blank">Open version 2</a>
+    </section>
+
+    <!-- Exercise 3 -->
+    <section class="exercise" id="ex3">
+      <h2>Exercise 3 — Refraction and Transparent Sphere</h2>
+      <p>
+        We made the sphere transparent by implementing refraction.  
+        Using the index of refraction equal to one point five, we computed how light bends when entering or leaving the material.  
+        The direction of the refracted ray depends on whether the ray was coming from inside or outside, which we determined using the dot product between the ray direction and the surface normal.  
+        This produced a glass-like sphere that distorts the background objects.
+      </p>
+      <img src="images/w2_ex3.png" alt="Refraction result" />
+      <a class="code-link" href="w2_version3.html" target="_blank">Open version 3</a>
+    </section>
+
+    <!-- Exercise 4 -->
+    <section class="exercise" id="ex4">
+      <h2>Exercise 4 — Phong Illumination Model</h2>
+      <p>
+        We added the Phong illumination model to simulate shiny surfaces that reflect light sources as bright spots.  
+        We used a specular reflectance of zero point one for all color channels and a shininess exponent of forty two for the sphere.  
+        The model adds a specular term based on the angle between the view direction and the reflection direction.  
+        This gave the sphere a smooth highlight that makes it look glossy even without true reflections.
+      </p>
+      <img src="images/w2_ex4.png" alt="Phong shading result" />
+      <a class="code-link" href="w2_version4.html" target="_blank">Open version 4</a>
+    </section>
+
+    <!-- Exercise 5 -->
+    <section class="exercise" id="ex5">
+      <h2>Exercise 5 — Glossy Shader</h2>
+      <p>
+        The final part combined refraction and Phong reflection into one glossy shader.  
+        This shader makes the sphere both transparent and shiny, which looks like a polished glass material.  
+        We kept the material and scene data organized inside a single intersect scene function and passed all parameters through function arguments.  
+        This made the code modular and allowed all shading functions to work with any object type.  
+        The result is a visually rich scene with realistic light behavior.
+      </p>
+      <img src="images/w2_ex5.png" alt="Glossy shading result" />
+      <a class="code-link" href="w2_version5.html" target="_blank">Open version 5</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <a class="back" href="index.html">← Back to Home</a>
+  </footer>
+</body>
+</html>

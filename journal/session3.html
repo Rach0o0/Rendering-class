@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session 3 — Texture Mapping</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header class="subpage-header">
+    <h1>Session 3 — Texture Mapping</h1>
+    <p>
+      In this session we make surfaces look more realistic by adding texture detail. 
+      We load an image on the GPU, compute texture coordinates on geometry, look up colors from the texture, and use anti aliasing to reduce artifacts.
+    </p>
+  </header>
+
+  <main class="session-content">
+
+    <!-- Exercise 1 -->
+    <section class="exercise" id="ex1">
+      <h2>Exercise 1 — Load a texture and show it with different modes</h2>
+      <p>
+        We wrote a function in JavaScript that loads an image without color space conversion and uploads it to a GPU texture. 
+        We displayed the texture directly on the image plane using the uv coordinates of the fragment. 
+        First we used clamp to edge addressing and nearest filtering. 
+        Then we added a small interface to switch between clamp to edge and repeat addressing and to switch between nearest and linear filtering.
+      </p>
+      <img src="images/w3_ex1.png" alt="Texture shown with address and filter modes"/>
+      <a class="code-link" href="w3_version1.html" target="_blank">Open version 1</a>
+    </section>
+
+    <!-- Exercise 2 -->
+    <section class="exercise" id="ex2">
+      <h2>Exercise 2 — Map the texture to the ground plane</h2>
+      <p>
+        We mapped the loaded texture to the plane in the default scene. 
+        We moved the texture look up to the scene intersection function so colors come from the material at the hit point. 
+        We added texture coordinates to the hit info structure. 
+        We used an orthonormal basis for the plane and computed the inverse mapping to get u and v from the hit position. 
+        We applied a scale factor of zero point two to control the size of the pattern. 
+        We used ninety percent of the texture color for the diffuse term and ten percent for the ambient term. 
+        We also added a toggle in the interface so we can turn texturing on or off.
+      </p>
+      <img src="images/w3_ex2.png" alt="Texture mapped plane with inverse mapping"/>
+      <a class="code-link" href="w3_version2.html" target="_blank">Open version 2</a>
+    </section>
+
+    <!-- Exercise 3 -->
+    <section class="exercise" id="ex3">
+      <h2>Exercise 3 — Stratified jitter sampling for anti aliasing</h2>
+      <p>
+        We reduced aliasing by sending several rays per pixel at jittered subpixel positions. 
+        In JavaScript we computed a list of small two dimensional offsets that place one sample inside each subpixel cell. 
+        We stored these offsets in a storage buffer on the GPU. 
+        In the fragment shader we looped over the offsets, displaced the image plane coordinates, traced a ray for each subpixel, and averaged the results. 
+        We added a control on the page that changes the number of subdivisions so we can compare the visual quality and the cost.
+      </p>
+      <img src="images/w3_ex3.png" alt="Stratified jitter anti aliasing"/>
+      <a class="code-link" href="w3_version3.html" target="_blank">Open version 3</a>
+    </section>
+
+    <!-- Exercise 4 -->
+    <section class="exercise" id="ex4">
+      <h2>Exercise 4 — Texture magnification and full interface</h2>
+      <p>
+        We created a control to divide the texture scale by a value from one to ten which magnifies the texture by the same factor. 
+        The page interface now supports the following features. 
+        You can enable or disable texturing. 
+        You can choose address mode. 
+        You can choose filtering mode. 
+        You can change the texture scale. 
+        You can change the number of pixel subdivisions. 
+        You can change gamma if needed.
+      </p>
+      <p>
+        Observations from experiments. 
+        When we magnify the texture, nearest filtering gives visible blocky pixels while linear filtering looks smoother. 
+        When the texture is minified, increasing the number of samples per pixel with stratified jitter reduces moiré patterns and shimmering. 
+        The base color shader is useful to study aliasing since it removes lighting variation and makes the texture pattern easier to judge.
+      </p>
+      <img src="images/w3_ex4.png" alt="Magnification and UI controls"/>
+      <a class="code-link" href="w3_version4.html" target="_blank">Open version 4</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <a class="back" href="index.html">← Back to Home</a>
+  </footer>
+</body>
+</html>

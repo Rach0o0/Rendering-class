@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>HDR → RGBE.PNG</title>
+  <script src="hdrpng.min.js"></script>
+</head>
+<body>
+
+<h2>HDR to RGBE.PNG converter</h2>
+
+<button id="convert">Convert HDR</button>
+
+<script>
+document.getElementById("convert").onclick = function () {
+  const hdr = new HDRImage();
+  hdr.src = "symmetrical_garden_02_4k.hdr";   // ⚠️ nom EXACT de ton fichier
+
+  hdr.onload = function () {
+    hdr.toHDRBlob(function (blob) {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "symmetrical_garden_02_4k.RGBE.PNG";
+      a.click();
+    });
+  };
+};
+</script>
+
+</body>
+</html>

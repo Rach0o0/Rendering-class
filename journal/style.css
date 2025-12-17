@@ -1,0 +1,142 @@
+/* Global reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+/* Dark theme colors */
+body {
+  background: #0f1116;
+  color: #e6e6e6;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header section */
+header {
+  text-align: center;
+  padding: 80px 20px 40px;
+  background: linear-gradient(180deg, #181b22 0%, #0f1116 100%);
+}
+
+h1 {
+  font-size: 2.8rem;
+  color: #00bcd4;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.description {
+  font-size: 1rem;
+  color: #ccc;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Sessions grid */
+.sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  padding: 60px 80px;
+}
+
+.session-card {
+  background: #1b1e25;
+  padding: 30px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+  transition: all 0.3s ease;
+  border: 1px solid #2a2e36;
+}
+
+.session-card:hover {
+  transform: translateY(-5px);
+  background: #232732;
+  border-color: #00bcd4;
+}
+
+.session-card h2 {
+  color: #00bcd4;
+  margin-bottom: 8px;
+}
+
+.session-card p {
+  color: #bbb;
+  font-size: 0.95rem;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: auto;
+}
+
+
+.subpage-header {
+  text-align: center;
+  padding: 60px 20px 30px;
+  background: #181b22;
+}
+
+.session-content {
+  padding: 50px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.exercise {
+  background: #1b1e25;
+  border-radius: 12px;
+  padding: 30px;
+  border: 1px solid #2a2e36;
+}
+
+.exercise h2 {
+  color: #00bcd4;
+  margin-bottom: 10px;
+}
+
+.exercise p {
+  color: #ccc;
+  margin-bottom: 15px;
+}
+
+.exercise img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.code-link {
+  color: #00bcd4;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.code-link:hover {
+  text-decoration: underline;
+}
+
+.back {
+  display: inline-block;
+  margin: 20px;
+  color: #bbb;
+  text-decoration: none;
+}
+.back:hover {
+  color: #00bcd4;
+}

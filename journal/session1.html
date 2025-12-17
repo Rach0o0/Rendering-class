@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session 1 — Ray Casting</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header class="subpage-header">
+    <h1>Session 1 — Ray Casting</h1>
+    <p>This session introduces the core ideas behind a simple ray tracer. We learn how to send rays from the camera, detect the first object they touch, and shade the result with a basic light model.</p>
+  </header>
+
+  <main class="session-content">
+
+    <!-- Exercise 1 -->
+    <section class="exercise" id="ex1">
+      <h2>Exercise 1 — Pinhole Camera and Ray Directions</h2>
+      <p>
+        We created an HTML page with a canvas of size 512 by 512. The page loads WebGPU and clears the canvas to black.  
+        We drew a rectangle that fills the canvas. In the fragment shader we built a tiny pinhole camera. For each pixel we computed the direction of the primary ray that goes from the eye through the image plane.  
+        To test the directions we wrote the ray direction into the pixel color. Red grows from left to right. Green grows from bottom to top. Blue stays dark which gives a dark blue tone in the image.
+      </p>
+      <img src="images/w1_ex1.png" alt="Exercise 1 result"/>
+      <a class="code-link" href="w1_version1.html" target="_blank">Open version 1</a>
+    </section>
+
+    <!-- Exercise 2 -->
+    <section class="exercise" id="ex2">
+      <h2>Exercise 2 — Uniforms and Correct Aspect Ratio</h2>
+      <p>
+        We added a uniform block to pass the canvas aspect ratio and a camera constant that controls the zoom.  
+        With MV.js we computed the camera basis in JavaScript. We uploaded the eye position and the three basis vectors of the image plane as uniforms.  
+        We changed the canvas size to confirm that the image does not look stretched. The aspect ratio now keeps the geometry correct for any resolution.
+      </p>
+      <img src="images/w1_ex2.png" alt="Exercise 2 result"/>
+      <a class="code-link" href="w1_version2.html" target="_blank">Open version 2</a>
+    </section>
+
+    <!-- Exercise 3 -->
+    <section class="exercise" id="ex3">
+      <h2>Exercise 3 — Intersections with Plane Triangle and Sphere</h2>
+      <p>
+        We created a HitInfo structure to store information about the closest hit.  
+        We implemented three intersection functions. One for a plane. One for a triangle. One for a sphere.  
+        In the shader we traced a ray and asked each object for an intersection. When we found a hit we updated the maximum distance so we always kept the nearest surface.  
+        If the ray hit something we painted the pixel with the object color. If the ray missed we used a light blue background.
+      </p>
+      <img src="images/w1_ex3.png" alt="Exercise 3 result"/>
+      <a class="code-link" href="w1_version3.html" target="_blank">Open version 3</a>
+    </section>
+
+    <!-- Exercise 4 -->
+    <section class="exercise" id="ex4">
+      <h2>Exercise 4 — Diffuse Shading with a Point Light</h2>
+      <p>
+        We added a Light structure to return the incoming radiance and the direction to a point light.  
+        In the shade function we used the inverse square law to compute how light fades with distance. We used the Lambert cosine law to compute how much light a surface receives depending on the angle between the light and the normal.  
+        We stored the outgoing radiance in the pixel so we now see a shaded scene with simple diffuse materials.
+      </p>
+      <img src="images/w1_ex4.png" alt="Exercise 4 result"/>
+      <a class="code-link" href="w1_version4.html" target="_blank">Open version 4</a>
+    </section>
+
+    <!-- Exercise 5 -->
+    <section class="exercise" id="ex5">
+      <h2>Exercise 5 — Zoom Control and Live Re-render</h2>
+      <p>
+        We added a user interface to change the camera constant. There is a slider and the mouse wheel also works.  
+        When the value changes we write the new uniform values and render again. This lets us explore the scene with different fields of view.  
+        The optional gamma control can be added in the same way if needed.
+      </p>
+      <img src="images/w1_ex5.png" alt="Exercise 5 result"/>
+      <a class="code-link" href="w1_version5.html" target="_blank">Open version 5</a>
+    </section>
+
+  </main>
+
+  <footer>
+    <a class="back" href="index.html">← Back to Home</a>
+  </footer>
+</body>
+</html>
