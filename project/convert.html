@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>HDR Converter</title>
+  <script src="hdrpng.min.js"></script>
+</head>
+<body>
+
+<button id="convert">Convert HDR</button>
+
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+
+  const btn = document.getElementById("convert");
+
+  btn.onclick = () => {
+    console.log("Button clicked");
+
+    const hdr = new HDRImage();
+    hdr.src = "./HDR_rich_blue_nebulae_2.hdr";
+
+    hdr.onload = () => {
+      console.log("HDR loaded", hdr.width, hdr.height);
+
+      const pngData = hdr.toPNG();
+      const blob = new Blob([pngData], { type: "image/png" });
+
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "HDR_rich_blue_nebulae_2.hdr.png";
+      a.click();
+    };
+
+    hdr.onerror = (e) => {
+      console.error("HDR load failed", e);
+    };
+  };
+
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session 3 — Texture Mapping</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+    <header class="subpage-header">
+      <h1>Session 6 — Acceleration Structures (BSP Trees)</h1>
+      <p>
+        In this session, we focus on accelerating ray tracing for complex triangle meshes.
+        Instead of intersecting every ray with every triangle, we introduce a Binary Space
+        Partitioning (BSP) tree to significantly reduce the number of intersection tests.
+      </p>
+
+      <p>
+        The BSP tree is constructed on the CPU and uploaded to the GPU, where rays traverse
+        the hierarchy to find the closest intersection efficiently.
+      </p>
+    </header>
+
+
+  <main class="session-content">
+
+    <!-- Exercise 1 -->
+    <section class="exercise" id="ex1">
+      <h2>Exercise 1 — Triangle meshes, AABB and performance measurement</h2>
+
+      <p>
+        Starting from the brute-force ray tracer of Worksheet 5, I loaded triangle meshes
+        from <b>OBJ files</b> and intersected rays with all triangles in the mesh.
+      </p>
+
+      <p>
+        I added an <b>axis-aligned bounding box (AABB)</b> around the mesh and avoided
+        ray–triangle tests when a ray misses the bounding box.
+        I also used the <b>TimingHelper</b> utility to measure frame time.
+      </p>
+
+      <img src="images/w6_ex1.png" alt="Exercise 1 result">
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session6/1" target="_blank">
+          GitHub – Worksheet 6 / Exercise 1
+        </a>
+      </p>
+    </section>
+
+
+
+
+    <!-- Exercise 2 -->
+    <section class="exercise" id="ex2">
+      <h2>Exercise 2 — BSP tree traversal for ray intersections</h2>
+
+      <p>
+        Instead of looping over all triangles, I replaced the brute-force approach with
+        an <b>axis-aligned BSP tree</b> to find the closest ray–triangle intersection.
+      </p>
+
+      <p>
+        Rays traverse the BSP tree in the fragment shader, visiting near nodes first and
+        only visiting far nodes if necessary.
+        This allows efficient rendering of complex meshes such as the teapot and bunny.
+      </p>
+
+      <img src="images/w6_ex2.png" alt="Exercise 2 result">
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session6/2" target="_blank">
+          GitHub – Worksheet 6 / Exercise 2
+        </a>
+      </p>
+    </section>
+
+
+
+
+    <!-- Exercise 3 -->
+    <section class="exercise" id="ex3">
+      <h2>Exercise 3 — Interleaved buffers and area light shading</h2>
+
+      <p>
+        To stay below the WebGPU limit of storage buffers, I reduced the number of buffers
+        by <b>interleaving vertex positions and normals</b> and storing face indices with
+        material information.
+      </p>
+
+      <p>
+        With the reduced buffer layout, I reintroduced <b>area light shading</b> and
+        rendered the <b>Cornell box with blocks</b> using the BSP tree.
+      </p>
+
+      <img src="images/w6_ex3.png" alt="Exercise 3 result">
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session6/3" target="_blank">
+          GitHub – Worksheet 6 / Exercise 3
+        </a>
+      </p>
+    </section>
+
+
+
+
+    <!-- Exercise 4 -->
+    <section class="exercise" id="ex4">
+      <h2>Exercise 4 — Cornell box with mirror and glass spheres</h2>
+
+      <p>
+        Finally, I rendered the Cornell box without blocks and inserted a <b>mirror sphere</b>
+        and a <b>glass sphere (IOR 1.5)</b> at the specified positions.
+      </p>
+
+      <p>
+        The scene is rendered using the BSP tree and includes
+        <b>shadows</b>, <b>distant area light illumination</b>, and
+        optional <b>anti-aliasing using jitter sampling</b>.
+        The acceleration structure makes these effects feasible at interactive rates.
+      </p>
+
+      <img src="images/w6_ex4.png" alt="Exercise 4 result">
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session6/4" target="_blank">
+          GitHub – Worksheet 6 / Exercise 4
+        </a>
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <a class="back" href="index.html">← Back to Home</a>
+  </footer>
+</body>
+</html>

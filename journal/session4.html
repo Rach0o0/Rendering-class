@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session 4 — Radiometry & Photometry</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+
+<body>
+  <header class="subpage-header">
+    <h1>Session 4 — Radiometry & Photometry</h1>
+    <p>
+      This worksheet focuses on radiometric and photometric quantities used to describe
+      how light energy is emitted, transported, and perceived.
+      All questions are answered analytically.
+    </p>
+  </header>
+
+  <main class="session-content">
+
+    <!-- PART 1 -->
+    <section class="exercise">
+      <h2>Part 1 — Photon emission from a light bulb</h2>
+
+      <p>
+        A 60 W light bulb emits visible light with an efficiency of 10%.
+        The emitted radiant power is therefore:
+      </p>
+
+      <p><b>P<sub>rad</sub> = 0.1 × 60 W = 6 W</b></p>
+
+      <p>
+        Assuming monochromatic light with wavelength λ = 500 nm, the energy of a single photon is:
+      </p>
+
+      <p>
+        E = hc / λ ≈ (6.626×10⁻³⁴ × 3×10⁸) / (5×10⁻⁷)
+        ≈ 3.97×10⁻¹⁹ J
+      </p>
+
+      <p>
+        The number of photons emitted per second is therefore:
+      </p>
+
+      <p>
+        N = P / E ≈ 6 / (3.97×10⁻¹⁹) ≈ <b>1.5×10¹⁹ photons/s</b>
+      </p>
+    </section>
+
+    <!-- PART 2 -->
+    <section class="exercise">
+      <h2>Part 2 — Radiometric quantities of a spherical light source</h2>
+
+      <p>
+        The radiant flux of the bulb is Φ = 6 W.
+        Since emission is isotropic, the radiant intensity is:
+      </p>
+
+      <p>
+        I = Φ / (4π) ≈ 6 / (4π) ≈ <b>0.48 W·sr⁻¹</b>
+      </p>
+
+      <p>
+        For a spherical bulb of radius r = 3 cm, the surface area is:
+      </p>
+
+      <p>
+        A = 4πr² ≈ 0.0113 m²
+      </p>
+
+      <p>
+        The radiant exitance is therefore:
+      </p>
+
+      <p>
+        M = Φ / A ≈ 6 / 0.0113 ≈ <b>531 W·m⁻²</b>
+      </p>
+
+      <p>
+        The total energy emitted over one hour is:
+      </p>
+
+      <p>
+        E = Φ × t = 6 × 3600 = <b>21600 J</b>
+      </p>
+    </section>
+
+    <!-- PART 3 -->
+    <section class="exercise">
+      <h2>Part 3 — Irradiance received by the eye</h2>
+
+      <p>
+        The pupil radius is r = 3 mm, giving an area:
+      </p>
+
+      <p>
+        A = πr² ≈ 2.83×10⁻⁵ m²
+      </p>
+
+      <p>
+        At a distance of d = 5 m, the irradiance is:
+      </p>
+
+      <p>
+        E = Φ / (4πd²) ≈ 6 / (4π × 25) ≈ 0.019 W·m⁻²
+      </p>
+
+      <p>
+        The power entering the eye is:
+      </p>
+
+      <p>
+        P = E × A ≈ 5.4×10⁻⁷ W
+      </p>
+    </section>
+
+    <!-- PART 4 -->
+    <section class="exercise">
+      <h2>Part 4 — Irradiance and illuminance on a table</h2>
+
+      <p>
+        The irradiance on the table is computed using the same inverse-square law.
+        To convert irradiance to illuminance, the luminous efficacy at 500 nm
+        (≈ 683 lm/W) is used.
+      </p>
+
+      <p>
+        E<sub>v</sub> = E × 683 ≈ <b>13 lux</b>
+      </p>
+    </section>
+
+    <!-- PART 5 -->
+    <section class="exercise">
+      <h2>Part 5 — Measuring luminous intensity</h2>
+
+      <p>
+        Using a photometric balance, equal illuminance implies:
+      </p>
+
+      <p>
+        I₁ / d₁² = I₂ / d₂²
+      </p>
+
+      <p>
+        Solving for the unknown luminous intensity yields the final result.
+      </p>
+    </section>
+
+    <!-- PART 6 -->
+    <section class="exercise">
+      <h2>Part 6 — Radiance and radiant exitance of a diffuse emitter</h2>
+
+      <p>
+        For a diffuse emitter, radiant exitance and radiance are related by:
+      </p>
+
+      <p>
+        M = πL
+      </p>
+
+      <p>
+        Given the surface area, the total emitted power follows directly.
+      </p>
+    </section>
+
+    <!-- PART 7 -->
+    <section class="exercise">
+      <h2>Part 7 — Non-diffuse emitter</h2>
+
+      <p>
+        When radiance depends on direction, radiant exitance must be computed
+        by integrating radiance over the hemisphere.
+      </p>
+
+      <p>
+        This results in a different total emitted power compared to a diffuse emitter.
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <a class="back" href="index.html">← Back to Home</a>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session 3 — Texture Mapping</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+    <header class="subpage-header">
+      <h1>Session 8 — Fresnel Reflection & Absorption</h1>
+      <p>
+        In this session we extend the ray tracer to support physically based transparent materials.
+        We model angle-dependent reflectance using Fresnel equations and simulate light absorption
+        inside transparent media using exponential attenuation.
+      </p>
+    </header>
+
+
+  <main class="session-content">
+
+    <!-- Exercise 1 -->
+    <section class="exercise" id="ex1">
+      <h2>Exercise 1 — Fresnel-based transparency</h2>
+
+      <p>
+        Starting from the Cornell box scene with a mirror sphere and a glass sphere,
+        I replaced the simple refraction-only shader with a physically based
+        <b>transparent material</b> shader.
+      </p>
+
+      <p>
+        I implemented a <code>fresnel_R</code> function based on Fresnel equations to compute
+        the reflectance <b>R</b> as a function of the incident angle.
+        Total internal reflection is handled by forcing <b>R = 1</b>.
+      </p>
+
+      <p>
+        The Fresnel reflectance is used as a probability in a <b>Russian roulette</b>
+        to choose between reflection and refraction at each hit.
+        Indirect illumination is disabled at this stage to isolate the Fresnel effect.
+      </p>
+
+      <img src="images/w8_ex1.png" alt="Exercise 1 result">
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session8/1" target="_blank">
+          GitHub – Worksheet 8 / Exercise 1
+        </a>
+      </p>
+    </section>
+
+
+
+    <!-- Exercise 2 -->
+    <section class="exercise" id="ex2">
+      <h2>Exercise 2 — Indirect illumination and caustics</h2>
+
+      <p>
+        In this step, I enabled <b>indirect illumination</b> by allowing secondary ray bounces,
+        while disabling the environment light to focus on light transport inside the scene.
+      </p>
+
+      <p>
+        To correctly render caustics, I set the <b>emit flag</b> to true for specular materials
+        (mirror and transparent).
+        This allows light paths to contribute radiance even though direct lighting
+        is not explicitly evaluated in these shaders.
+      </p>
+
+      <p>
+        As a result, light focusing effects caused by reflection and refraction
+        become visible on nearby surfaces.
+      </p>
+
+      <img src="images/w8_ex2.png" alt="Exercise 2 result">
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session8/2" target="_blank">
+          GitHub – Worksheet 8 / Exercise 2
+        </a>
+      </p>
+    </section>
+
+
+
+    <!-- Exercise 3 -->
+    <section class="exercise" id="ex3">
+      <h2>Exercise 3 — Absorption in transparent media</h2>
+
+      <p>
+        Finally, I added <b>absorption</b> inside transparent objects using
+        <b>Bouguer’s law of exponential attenuation</b>.
+        A non-zero RGB extinction coefficient is assigned when the glass sphere is hit.
+      </p>
+
+      <p>
+        When a ray travels inside the transparent medium, the beam transmittance
+        <code>Tr = exp(-σt · s)</code> is computed based on the traveled distance.
+        Russian roulette is used to decide whether the ray is absorbed or transmitted.
+      </p>
+
+      <p>
+        The path throughput is updated using the RGB transmittance, which gives the glass
+        sphere a colored appearance that depends on the traveled distance.
+      </p>
+
+      <img src="images/w8_ex3.png" alt="Exercise 3 result">
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session8/3" target="_blank">
+          GitHub – Worksheet 8 / Exercise 3
+        </a>
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <a class="back" href="index.html">← Back to Home</a>
+  </footer>
+</body>
+</html>

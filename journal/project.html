@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Final Project — Cinematic Camera Effects</title>
+  <link rel="stylesheet" href="style.css" />
+  
+</head>
+
+<body>
+
+  <header class="subpage-header">
+    <h1>Final Project — Cinematic Camera Effects for Game-Style Rendering</h1>
+    <p>
+        done by Rachid Tazi
+    </p>
+    <p>
+      This project explores cinematic camera effects inspired by modern video game
+      cutscenes, implemented in a WebGPU-based ray tracer. 
+    </p>
+    <script>
+    window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+    };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  </header>
+
+  <main class="session-content project-content">
+
+    <!-- ================= INTRODUCTION ================= -->
+    <section class="exercise" id="intro">
+      <h2>Introduction</h2>
+
+    <p>Modern video games lean hard on cinematic rendering to pull players in and tell stories visually. 
+        It’s not just about making things look real with geometry, camera work shapes everything we see. 
+        The way the camera moves, where it focuses, how it blurs or sharpens the scene, or even how it tracks subjects, all of that guides our eyes and sets the mood. 
+        Techniques like depth of field, focus shifts, and smooth camera motion aren’t random tricks; they come straight from the playbook of real-world cinematographers and show up everywhere in games, especially during cutscenes.
+    </p>
+
+    <p>This project takes a deep dive into those cinematic camera effects, but in real time, using a ray-based renderer built with WebGPU. 
+        I’m not chasing the most complex 3D models or fancy global illumination here. 
+        Instead, the spotlight is on the camera itself, how its settings and moves can transform a scene. 
+        The setup stays intentionally simple: there’s just one dragon model, floating in a dark, space-like backdrop. 
+        Several glowing orbs light up the dragon and act as visual anchors. 
+        This scene brings out high contrast, strong highlights, and a real sense of depth, which makes it perfect for testing out camera effects.
+    </p>
+
+    <p>The idea was to capture the vibe of a game cutscene, a dragon drifting through space, surrounded by glowing orbs. By tweaking things like aperture, focus distance, and camera movement over time, the renderer can pull off classic cinematic effects: sharp subjects against a dreamy blur, dramatic focus pulls, and those smooth, gliding dolly shots you see in modern games.
+    </p>
+
+    <p>
+    On the technical side, the project builds on the ray-based rendering techniques covered in the course: progressive image buildup, environment lighting, all of that. From there, I added a few key features to push the cinematic look further: a physically based thin-lens camera for real depth of field, animated camera paths, procedural glowing lights, and glass materials with real refraction and absorption effects. Everything’s tweakable in real time through an interactive interface, so you can experiment and see the results instantly.
+    </p>
+
+    <p>
+    In the end, this project connects the theory behind physically based rendering with its real-world use in games, especially when it comes to visual storytelling. It shows that with just a handful of targeted upgrades, a ray tracer can deliver the kind of cinematic flair and creative control you expect from much bigger engines, even when working within the limits of WebGPU.
+    </p>
+
+    <p>
+    Initially, the project was planned around rendering the Bitterli dragon model,
+    as it provides a complex and visually rich test case for cinematic lighting and
+    camera effects. However, due to performance and memory limitations on my local
+    machine, the dragon model proved too expensive to render interactively using a
+    WebGPU-based path tracer.
+    </p>
+
+    <p>
+    As a result, the final implementation and experiments use the Stanford bunny
+    model instead. While simpler in geometric complexity, the bunny still allows
+    meaningful exploration of depth of field, emissive lighting, glass refraction,
+    and cinematic camera motion. All techniques presented in this report are directly
+    transferable to more complex models under less restrictive hardware constraints.
+    </p>
+
+    </section>
+
+    <!-- ================= CODE ================= -->
+    <section class="exercise" id="code">
+      <h2>Source Code</h2>
+
+      <p>
+        The full source code for this project is available on GitHub:
+      </p>
+
+      <p>
+        <a href="https://github.com/Rach0o0/Rendering-class/project" target="_blank">
+          GitHub — Final Project
+        </a>
+      </p>
+    </section>
+
+    <!-- ================= METHOD ================= -->
+    <section class="exercise" id="project-method">
+    <h2>Method</h2>
+
+    <p>
+        This project focuses on extending a basic path tracing renderer with
+        <b>cinematic, camera-inspired effects</b> commonly used in real-time
+        and offline rendering for video games.
+        Rather than aiming for full physical accuracy, the chosen methods
+        balance physical plausibility, artistic control, and computational feasibility
+        within a WebGPU-based renderer.
+    </p>
+
+    <!-- ============================================================= -->
+    <!-- Depth of Field -->
+    <!-- ============================================================= -->
+
+    <h3>Thin Lens Depth of Field</h3>
+
+    <p>
+        Depth of Field is simulated using a <b>thin lens camera model</b>.
+        Instead of emitting rays from a single pinhole, rays originate from
+        random positions on a circular lens aperture.
+        This produces realistic defocus blur for objects that are not located
+        at the focal distance.
+    </p>
+
+    <p>
+        For a pixel ray direction $d$, the focal point $P_f$ is computed as:
+    </p>
+
+    $$
+    P_f = C + f \cdot d
+    $$
+
+    <p>
+        where $C$ is the camera position and $f$ is the focal distance.
+        A random point $L$ is then sampled on a disk of radius $r$ (the aperture size),
+        and the ray direction is recomputed as:
+    </p>
+
+    $$
+    d' = \frac{P_f - L}{\|P_f - L\|}
+    $$
+
+    <p>
+        Larger aperture values result in stronger blur, while smaller apertures
+        converge toward a pinhole camera.
+        This model provides an intuitive mapping between real camera parameters
+        and rendered appearance.
+    </p>
+
+    <!-- ============================================================= -->
+    <!-- Emissive Orbs -->
+    <!-- ============================================================= -->
+
+    <h3>Procedural Emissive Orbs</h3>
+
+    <p>
+        To introduce visually interesting light sources, emissive spherical orbs
+        are added around the dragon.
+        Each orb consists of an inner emissive core and an outer glass shell.
+        The emission inside the core is modulated using procedural noise to
+        resemble animated plasma filaments.
+    </p>
+
+    <p>
+        The emission intensity is defined as a combination of radial profiles:
+    </p>
+
+    $$
+    I(r) = a \cdot e^{-k_1 r^2} + b \cdot |N(p)| \cdot e^{-k_2 r} + c \cdot e^{-k_3 r}
+    $$
+
+    <p>
+        where $r$ is the normalized distance from the center of the orb,
+        $N(p)$ is a procedural sinusoidal noise function, and
+        $(a,b,c)$ control the contribution of the core, filaments, and halo.
+        Time-varying phase shifts are applied to the noise to create smooth,
+        continuous animation.
+    </p>
+
+    <!-- ============================================================= -->
+    <!-- Glass -->
+    <!-- ============================================================= -->
+
+    <h3>Glass Refraction and Absorption</h3>
+
+    <p>
+        The outer shell of each orb is rendered as a refractive glass material.
+        Refraction is computed using <b>Snell’s law</b>, with reflection and
+        transmission probabilities controlled by the Fresnel equations.
+    </p>
+
+    <p>
+        To account for light attenuation inside the glass, an exponential
+        absorption model based on the <b>Beer–Lambert law</b> is applied:
+    </p>
+
+    $$
+    T(d) = e^{-\sigma d}
+    $$
+
+    <p>
+        where $\sigma$ is the extinction coefficient and $d$ is the distance
+        traveled inside the medium.
+        This produces subtle coloration and soft attenuation without introducing
+        excessive noise.
+    </p>
+
+    <!-- ============================================================= -->
+    <!-- Fake Caustics -->
+    <!-- ============================================================= -->
+
+    <h3>Fake Caustics Approximation</h3>
+
+    <p>
+        True caustics require complex light transport techniques such as photon
+        mapping or bidirectional path tracing.
+        Instead, this project uses a <b>fake caustics approximation</b> to
+        enhance visual realism at low cost.
+    </p>
+
+    <p>
+        The caustic contribution at a surface point is approximated by
+        concentrating light from nearby emissive orbs based on surface orientation:
+    </p>
+
+    $$
+    C = \sum_i \frac{L_i \cdot \max(n \cdot \omega_i, 0)^p}{\|\omega_i\|^2}
+    $$
+
+    <p>
+        where $L_i$ is the emission of orb $i$, $\omega_i$ is the direction toward
+        the orb, $n$ is the surface normal, and $p$ controls the sharpness of the
+        caustic highlight.
+        Although not physically accurate, this method effectively suggests
+        focused light patterns and significantly improves the perceived richness
+        of the scene.
+    </p>
+
+    <!-- ============================================================= -->
+    <!-- Cinematic Camera Motion -->
+    <!-- ============================================================= -->
+
+    <h3>Cinematic Camera Motion</h3>
+
+    <p>
+        To reinforce the cinematic intent of the project, smooth camera animations
+        such as <b>dolly motion</b> and <b>elliptical orbiting</b> are introduced.
+        Camera parameters are interpolated over time using smooth easing functions,
+        avoiding abrupt changes and preserving visual continuity.
+    </p>
+
+    <p>
+        Combined with Depth of Field, these camera motions help frame the dragon
+        as a cinematic subject rather than a static test object.
+    </p>
+
+    </section>
+
+
+
+    <!-- ================= IMPLEMENTATION ================= -->
+    <section class="exercise" id="implementation">
+
+    <h2>Implementation</h2>
+
+    <p>
+        Here’s how the methods actually work in practice, using WebGPU, JavaScript, and WGSL.
+        Everything’s built around a modular structure: camera controls, lighting, and shading
+        each get their own space, split between CPU code and GPU shaders.
+    </p>
+
+    <h3>Architecture</h3>
+
+    <p>
+        The renderer runs as a full-screen path tracer, everything happens in the fragment shader.
+        The vertex shader just draws a single quad that covers the viewport, nothing fancy.
+        The fragment shader handles all the heavy lifting: firing primary rays, finding intersections,
+        and shading.
+    </p>
+
+    <p>
+        All scene data (geometry, materials, acceleration structures, and camera settings) gets sent
+        to the GPU with storage buffers and one uniform buffer. Each frame, the renderer updates the
+        camera parameters and fires off a single draw call.
+    </p>
+
+    <h3>Thin Lens Depth of Field</h3>
+
+    <p>
+        Depth of field is handled right in the fragment shader, using a thin lens camera model.
+        Instead of always shooting rays from a fixed point, each ray starts somewhere random on
+        a circular lens. The CPU exposes aperture radius and focal distance as interactive controls,
+        storing them in the uniform buffer as <code>uniforms.aperture</code> and
+        <code>uniforms.focus_dist</code>.
+    </p>
+
+    <p>
+        Inside the fragment shader, the <code>get_camera_ray_dof</code> function handles ray generation.
+        It figures out where the ray’s focus point should be, then picks a random spot on the lens
+        disk using polar coordinates. The ray gets aimed at the focal point.
+    </p>
+
+    <p>
+        Set the aperture to zero and the system switches back to a pinhole camera, so you can easily
+        compare sharp and blurry renderings.
+    </p>
+
+    <h3>Procedural Emissive Orbs</h3>
+
+    <p>
+        Lighting comes from a set of procedural emissive orbs arranged around the dragon.
+        Each orb has two parts: a glowing core inside, and a transparent glass shell outside.
+    </p>
+
+    <p>
+        When tracing rays, the <code>intersect_scene</code> function checks for hits with these spheres
+        first, before considering the mesh. Each part (the core and the shell) gets its own object ID,
+        which lets the shader treat them differently.
+    </p>
+
+    <p>
+        The core’s emission is fully procedural. The <code>shade</code> function combines radial falloff
+        with animated sinusoidal noise to create glowing plasma-like filaments. The animation ties to
+        the frame counter, giving smooth, shifting patterns.
+    </p>
+
+    <h3>Glass Refraction and Absorption</h3>
+
+    <p>
+        The glass shell uses a physically-inspired model for refraction. The
+        <code>transparent</code> shading function calculates both refraction and reflection with
+        Snell’s law and Fresnel equations.
+    </p>
+
+    <p>
+        For realism, the shader models how light gets absorbed inside the glass. It uses exponential
+        attenuation, with extinction coefficients stored per object and applied as rays exit the glass.
+    </p>
+
+    <p>
+        Even though the approach skips some physical details, it nails colored absorption and edge
+        highlights, and works well with progressive rendering.
+    </p>
+
+    <h3>Fake Caustics</h3>
+
+    <p>
+        True caustics (those bright, focused light patterns) aren’t simulated with full light transport.
+        Instead, the renderer fakes them with a simple shading term added to diffuse surfaces.
+    </p>
+
+    <p>
+        Whenever a surface is hit, the nearby emissive orbs add extra light based on distance and the
+        angle of the surface. The <code>fake_caustic</code> function handles this, and the result gets
+        added to the outgoing radiance.
+    </p>
+
+    <p>
+        It’s not physically perfect, but these fake caustics do a great job making the scene feel richer
+        and more dramatic, without much cost.
+    </p>
+
+    <h3>Cinematic Camera Motion</h3>
+
+    <p>
+        To give the whole thing a cinematic feel, the CPU manages several camera animations.
+        There’s a smooth dolly in and out, an elliptical orbit that circles the scene, and a rack
+        focus that shifts the focal plane.
+    </p>
+
+    <p>
+        Every frame, the camera’s position and orientation update, and the new values go into the
+        uniform buffer before rendering. Smooth interpolation keeps the camera motion natural and
+        avoids jerkiness, much more like shooting with a real camera.
+    </p>
+
+    </section>
+
+
+
+    <!-- ================= RESULTS ================= -->
+    <section class="exercise" id="results">
+
+    <h2>Results</h2>
+
+    <p>
+        This section presents visual results obtained with the final renderer.
+        All images were produced interactively using the WebGPU implementation
+        described earlier, and demonstrate the impact of cinematic camera effects,
+        emissive lighting, and shading extensions on a simple scene.
+    </p>
+
+    <!-- ===================================================== -->
+    <h3>Depth of Field Effects</h3>
+
+    <p>
+        Figure 1 illustrates the effect of the thin lens depth of field model.
+        By increasing the aperture radius while keeping the focal distance fixed,
+        objects outside the focal plane become increasingly blurred, while the
+        focused region remains sharp.
+    </p>
+
+    <p>
+        This behavior provides a strong
+        cinematic feel compared to a traditional pinhole camera.
+    </p>
+
+    <figure>
+        <img src="images/dop.png" alt="Depth of field comparison" />
+        <figcaption>
+        Figure 1: Effect of the thin lens depth of field model
+        </figcaption>
+    </figure>
+    <p></p>
+    <!-- ===================================================== -->
+    <h3>Emissive Orbs and Procedural Filaments</h3>
+
+    <p>
+        The scene is illuminated by several emissive orbs placed around the bunny.
+        Each orb uses a fully procedural emission model combining radial falloff
+        and animated filament-like noise.
+    </p>
+
+    <p>
+        The animation evolves smoothly over time and produces the impression of
+        glowing plasma inside the orbs, without relying on textures or precomputed
+        data.
+    </p>
+
+    <figure>
+        <img src="images/orb.gif" alt="Procedural emissive orbs" />
+        <figcaption>
+        Figure 2: Procedural emissive orbs with animated filament patterns.
+        </figcaption>
+    </figure>
+
+    <p></p>
+    <!-- ===================================================== -->
+    <h3>Glass Refraction and Absorption</h3>
+
+    <p>
+        Each emissive orb is surrounded by a transparent glass shell. The shell
+        exhibits refraction, Fresnel reflection, and wavelength-dependent absorption.
+        As rays travel through the glass, colored attenuation becomes visible,
+        especially along thicker regions and grazing angles.
+    </p>
+
+    <p>
+        The resulting appearance enhances depth perception and reinforces the
+        physical plausibility of the light sources.
+    </p>
+
+    <figure>
+        <img src="images/refraction.png" alt="Glass refraction and absorption" />
+        <figcaption>
+        Figure 3: Glass shells around the emissive orbs showing refraction and
+        colored absorption.
+        </figcaption>
+    </figure>
+
+    <p></p>
+    <!-- ===================================================== -->
+    <h3>Fake Caustics and Light Interaction</h3>
+
+    <p>
+        Although full caustic light transport is not simulated, a fake caustic term
+        significantly improves the visual richness of the scene. Diffuse surfaces
+        receive additional focused illumination from nearby emissive orbs, creating
+        the impression of concentrated light patterns.
+    </p>
+
+    <p>
+        This approximation adds minimal computational cost while noticeably
+        enhancing contrast and local lighting variation.
+    </p>
+
+    <figure>
+        <img src="images/caustic.png" alt="Fake caustic lighting" />
+        <figcaption>
+        Figure 4: Fake caustic lighting contribution on diffuse surfaces.
+        </figcaption>
+    </figure>
+
+    <!-- ===================================================== -->
+    <h3>Cinematic Camera Motion</h3>
+
+    <p>
+        Finally, the renderer supports several camera animations, including a
+        smooth dolly movement, an elliptical orbit around the subject, and a rack
+        focus effect. These motions are updated every frame on the CPU and applied
+        consistently in the shader.
+    </p>
+
+    <p>
+        Combined with depth of field and emissive lighting, these animations produce
+        a result reminiscent of real-time game cutscenes rather than static renders.
+    </p>
+
+    <figure>
+        <img src="images/dolly_shot.gif" alt="Cinematic camera motion" />
+        <figcaption>
+        Figure 5: Dolly shot animation.
+        </figcaption>
+    </figure>
+
+    <figure>
+        <img src="images/ellipse.gif" alt="Cinematic camera motion" />
+        <figcaption>
+        Figure 6: Ellispe shot animation.
+        </figcaption>
+    </figure>
+
+    </section>
+
+
+
+    <!-- ================= DISCUSSION ================= -->
+    <section class="exercise" id="discussion">
+      <h2>Discussion</h2>
+
+    <p>
+    This project makes a pretty clear point: you don’t need complex geometry to get beautiful, cinematic visuals. By dialing in depth of field, camera movement, and dramatic lighting, the renderer delivers images that feel more like game cutscenes than stiff, technical ray tracing demos.
+    </p>
+    <p>
+    The thin lens depth of field model stands out here. It pulls the viewer’s gaze right where you want and gives the scene real sense of scale. Pair that with animated camera moves (ex: dolly shots and rack focus) and you get images with a strong cinematic vibe. The procedural emissive orbs do double duty, too: they light the scene and act as visual highlights, making things lively without loading up on heavy assets.
+    </p>
+    <p>
+    Of course, some shortcuts were needed. The renderer fakes caustics with a simple shading trick instead of simulating true light paths, and the glass skips over some details like multiple internal reflections. That’s a conscious tradeoff: you lose some physical realism, but you gain speed and more direct artistic control. For this project, that makes sense.
+    </p>
+    <p>
+    Performance shaped a lot of decisions as well. The original, detailed dragon mesh had to go (replaced by a simpler bunny) to keep rendering times manageable with progressive path tracing on WebGPU. That swap says a lot about the constant balancing act in real-time rendering: scene complexity versus visual effects.
+    </p>
+    <p>
+    In the end, this project shows that you can achieve striking cinematic looks by focusing on camera work and perceptual tricks, not just chasing perfect physical realism. For the future, pushing this further with post-processing, better light transport, or richer material models could take it to the next level.
+    </p>
+    </section>
+
+
+
+  </main>
+
+  <footer>
+    <a class="back" href="index.html">← Back to Home</a>
+  </footer>
+
+</body>
+</html>

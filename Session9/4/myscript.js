@@ -3,86 +3,6 @@
 //when the page load, we call main
 window.onload = function() { main(); }
 
-async function loadHDRToTexture(device, url) {
-    return new Promise((resolve, reject) => {
-        const hdr = new HDRImage();
-
-        hdr.onload = () => {
-            const width = hdr.width;
-            const height = hdr.height;
-
-            // RGBE 8-bit (obligatoire pour WGSL u32)
-            const dataRGBE = hdr.dataRGBE;
-
-            const texture = device.createTexture({
-                size: { width, height, depthOrArrayLayers: 1 },
-                format: "rgba8uint",
-                usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
-            });
-
-            device.queue.writeTexture(
-                { texture },
-                dataRGBE,
-                {
-                    bytesPerRow: width * 4,
-                    rowsPerImage: height,
-                },
-                { width, height, depthOrArrayLayers: 1 }
-            );
-
-            resolve({ texture, width, height, dataRGBE });
-        };
-
-        hdr.onerror = reject;
-        hdr.src = url;
-    });
-}
-
-
-function decodeRGBE_toLinear(r, g, b, e) {
-  if (e === 0) return [0, 0, 0];
-  const f = Math.pow(2, (e - 128) - 8);
-  return [r * f, g * f, b * f];
-}
-
-function findSunDirectionFromRGBE(dataRGBE, width, height) {
-  let best = -1;
-  let bestX = 0, bestY = 0;
-
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const i = 4 * (y * width + x);
-      const r = dataRGBE[i];
-      const g = dataRGBE[i + 1];
-      const b = dataRGBE[i + 2];
-      const e = dataRGBE[i + 3];
-
-      const [R, G, B] = decodeRGBE_toLinear(r, g, b, e);
-      const lum = 0.2126 * R + 0.7152 * G + 0.0722 * B;
-
-      if (lum > best) {
-        best = lum;
-        bestX = x;
-        bestY = y;
-      }
-    }
-  }
-
-  const u = (bestX + 0.5) / width;
-  const v = (bestY + 0.5) / height;
-
-  const theta = (u - 0.5) * 2.0 * Math.PI;
-  const ydir = Math.sin((0.5 - v) * Math.PI);
-  const cosLat = Math.sqrt(1.0 - ydir * ydir);
-
-  return [
-    Math.cos(theta) * cosLat,
-    ydir,
-    Math.sin(theta) * cosLat
-  ];
-}
-
-
 async function main()
 {
     //______________________________________
@@ -90,12 +10,8 @@ async function main()
     //______________________________________
     const gpu = navigator.gpu;
     const adapter = await gpu.requestAdapter();
-    const device = await adapter.requestDevice({
-        requiredFeatures : ['timestamp-query'],
-        requiredLimits:{
-            maxStorageBuffersPerShaderStage: 10
-        }
-    });
+    const device = await adapter.requestDevice();
+
 
     //_____________________________________
     // LOAD 3D OBJECT

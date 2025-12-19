@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session 3 — Texture Mapping</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header class="subpage-header">
+    <h1>Session 10 — Production Rendering with Blender</h1>
+    <p>
+      In this session, I use Blender and the Cycles renderer to place synthetic objects into a real photographed environment.
+      The goal is to connect the rendering techniques studied in the course with a production-ready path tracer,
+      using HDR environment lighting, realistic materials, and shadow catching.
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session10" target="_blank">
+          GitHub – Worksheet 10
+        </a>
+      </p>
+    </p>
+  </header>
+
+
+  <main class="session-content">
+
+    <!-- Exercise 1 -->
+    <section class="exercise">
+      <h2>Scene setup — HDR environment and shadow catcher</h2>
+
+      <p>
+        I started from the default Blender scene and switched the renderer to <b>Cycles</b>.
+        I removed the default point light and replaced it with a <b>360° HDR panoramic image</b>
+        used as environment lighting.
+      </p>
+
+      <p>
+        A large planar quad was added below the objects and set as a <b>shadow catcher</b>.
+        This makes the plane invisible while still receiving shadows, allowing the synthetic objects
+        to blend naturally into the photographed environment.
+      </p>
+
+      <img src="images/w10_ex0.png" alt="HDR environment and shadow catcher"/>
+    </section>
+
+    <section class="exercise">
+      <h2>Exercise 1 — Mirror materials</h2>
+
+      <p>
+        I added a sphere next to the cube and assigned both objects a <b>Principled BSDF</b>
+        configured to behave like a perfect mirror.
+      </p>
+
+      <p>
+        This was achieved by setting the <b>metallic value to 1</b> and the <b>roughness to 0</b>.
+        The HDR environment is clearly reflected on both objects, demonstrating how environment lighting
+        drives reflections in a physically based renderer.
+      </p>
+
+      <img src="images/w10_ex1.png" alt="Mirror sphere and cube"/>
+    </section>
+
+
+
+
+    <!-- Exercise 2 -->
+    <section class="exercise">
+      <h2>Exercise 2 — Metallic and glass materials</h2>
+
+      <p>
+        In this exercise, I modified the materials to produce more realistic appearances.
+        The sphere was turned into a <b>metallic glossy object</b> with a colored base and non-zero roughness,
+        while the cube was changed into a <b>glass material</b>.
+      </p>
+
+      <p>
+        The glass cube uses the Principled BSDF with <b>transmission enabled</b> and an
+        <b>index of refraction (IOR) set to 1.5</b>.
+        This produces realistic refraction and reflection effects consistent with physical optics.
+      </p>
+
+      <img src="images/w10_ex2.png" alt="Metallic sphere and glass cube"/>
+    </section>
+
+
+
+    <!-- Exercise 3 -->
+    <section class="exercise">
+      <h2>Exercise 3 — Imported mesh and final scene</h2>
+
+      <p>
+        I imported a triangle mesh into the scene and composed a final environment combining multiple objects.
+        Materials were chosen to match the environment lighting and to enhance realism.
+      </p>
+
+      <p>
+        To obtain a clean result, I adjusted several Cycles rendering parameters, such as
+        <b>maximum light bounces</b>, <b>samples per pixel</b>, and enabled <b>multiple importance sampling</b>
+        for the HDR environment.
+      </p>
+
+      <p>
+        These parameters are crucial to balance render quality and noise, especially in scenes with
+        glass, glossy reflections, and indirect illumination.
+      </p>
+
+      <img src="images/w10_ex3.png" alt="Final rendered scene"/>
+    </section>
+
+
+
+    <!-- Exercise 4 -->
+    <section class="exercise">
+      <h2>Exercise 4 — Cycles vs WebGPU</h2>
+
+      <p>
+        Using a third-party renderer like <b>Cycles</b> allows very fast production of high-quality images.
+        Complex features such as global illumination, multiple importance sampling, caustics, and
+        physically based materials are readily available and robust.
+      </p>
+
+      <p>
+        However, Cycles offers limited control over the internal rendering algorithms.
+        In contrast, a customizable renderer like <b>WebGPU</b> gives full control over ray generation,
+        intersection logic, shading models, and sampling strategies.
+        This makes WebGPU ideal for experimentation and learning.
+      </p>
+
+      <p>
+        On the other hand, implementing features such as a full Principled BSDF,
+        efficient path tracing, denoising, or HDR importance sampling would be a significant challenge
+        to reproduce from scratch in WebGPU.
+      </p>
+    </section>
+
+
+
+  </main>
+
+  <footer>
+    <a class="back" href="index.html">← Back to Home</a>
+  </footer>
+</body>
+</html>

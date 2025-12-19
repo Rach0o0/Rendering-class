@@ -19,70 +19,165 @@
   <main class="session-content">
 
     <!-- Exercise 1 -->
-    <section class="exercise" id="ex1">
-      <h2>Exercise 1 — Hard Shadows</h2>
+    <section class="exercise" id="w2-ex1">
+      <h2>Exercise 1 — Hard shadows</h2>
+
       <p>
-        We made the objects cast shadows by sending a new ray from each surface point toward the light source.  
-        If another object blocked the light, the surface stayed in shadow and only received the ambient term.  
-        Otherwise, both the ambient and diffuse parts were added.  
-        This gave a clear sense of depth and made the objects look more solid under lighting.
+        In this exercise, I extended the ray tracer to support <b>hard shadows</b>.
+        A <b>shadow ray</b> is generated from the surface hit point toward the point light.
       </p>
-      <img src="images/w2_ex1.png" alt="Hard shadows result" />
-      <a class="code-link" href="w2_version1.html" target="_blank">Open version 1</a>
+
+      <p>
+        If the shadow ray intersects another object before reaching the light,
+        the surface is considered to be in shadow and only the <b>ambient component</b>
+        is returned. Otherwise, diffuse illumination is computed using
+        <b>Lambert’s cosine law</b> and <b>inverse square falloff</b>.
+      </p>
+
+      <p>
+        To support this, the <code>Light</code> struct was extended to include the
+        distance to the light source, and a single <code>shade</code> function was used
+        for all materials.
+      </p>
+
+      <img src="images/w2_ex1.png" alt="Worksheet 2 Exercise 1"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session2/1" target="_blank">
+          GitHub – Worksheet 2 / Exercise 1
+        </a>
+      </p>
     </section>
+
 
     <!-- Exercise 2 -->
-    <section class="exercise" id="ex2">
-      <h2>Exercise 2 — Mirror Reflection and Shader Selection</h2>
+    <section class="exercise" id="w2-ex2">
+      <h2>Exercise 2 — Mirror reflection</h2>
+
       <p>
-        We implemented mirror reflection so that the sphere could act as a reflective surface.  
-        When a ray hit the sphere, we computed the reflected direction and traced a new ray along that path.  
-        The loop continued until no new reflection was needed or a maximum depth was reached.  
-        We also created a general shading function and a menu that allows selecting different shaders for the sphere and the matte surfaces.
+        This exercise adds a <b>mirror reflection shader</b>.
+        When a ray hits a mirror surface, a new ray is generated in the reflected direction
+        and traced recursively.
       </p>
-      <img src="images/w2_ex2.png" alt="Mirror reflection result" />
-      <a class="code-link" href="w2_version2.html" target="_blank">Open version 2</a>
+
+      <p>
+        A ray tracing loop was introduced, allowing rays to continue bouncing
+        as long as the shader requests it through a flag stored in the <code>HitInfo</code> struct.
+        The sphere in the default scene is rendered as a perfect mirror.
+      </p>
+
+      <p>
+        An HTML selection menu was added to switch between different shaders at runtime,
+        including a base color shader for debugging.
+      </p>
+
+      <img src="images/w2_ex2.png" alt="Worksheet 2 Exercise 2"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session2/2" target="_blank">
+          GitHub – Worksheet 2 / Exercise 2
+        </a>
+      </p>
     </section>
+
 
     <!-- Exercise 3 -->
-    <section class="exercise" id="ex3">
-      <h2>Exercise 3 — Refraction and Transparent Sphere</h2>
+    <section class="exercise" id="w2-ex3">
+      <h2>Exercise 3 — Refraction</h2>
+
       <p>
-        We made the sphere transparent by implementing refraction.  
-        Using the index of refraction equal to one point five, we computed how light bends when entering or leaving the material.  
-        The direction of the refracted ray depends on whether the ray was coming from inside or outside, which we determined using the dot product between the ray direction and the surface normal.  
-        This produced a glass-like sphere that distorts the background objects.
+        In this exercise, <b>refraction</b> was implemented to simulate a glass material.
+        The sphere is rendered as a refractive object with an index of refraction
+        <b>n = 1.5</b>.
       </p>
-      <img src="images/w2_ex3.png" alt="Refraction result" />
-      <a class="code-link" href="w2_version3.html" target="_blank">Open version 3</a>
+
+      <p>
+        The shader determines whether a ray enters or exits the object by checking
+        the sign of the dot product between the ray direction and the surface normal.
+        The relative index of refraction is stored in the <code>HitInfo</code> struct.
+      </p>
+
+      <p>
+        Snell’s law is used to compute the refracted ray direction,
+        and total internal reflection is handled when refraction is not possible.
+      </p>
+
+      <img src="images/w2_ex3.png" alt="Worksheet 2 Exercise 3"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session2/3" target="_blank">
+          GitHub – Worksheet 2 / Exercise 3
+        </a>
+      </p>
     </section>
+
 
     <!-- Exercise 4 -->
-    <section class="exercise" id="ex4">
-      <h2>Exercise 4 — Phong Illumination Model</h2>
+    <section class="exercise" id="w2-ex4">
+      <h2>Exercise 4 — Phong illumination</h2>
+
       <p>
-        We added the Phong illumination model to simulate shiny surfaces that reflect light sources as bright spots.  
-        We used a specular reflectance of zero point one for all color channels and a shininess exponent of forty two for the sphere.  
-        The model adds a specular term based on the angle between the view direction and the reflection direction.  
-        This gave the sphere a smooth highlight that makes it look glossy even without true reflections.
+        This exercise introduces the <b>Phong illumination model</b>
+        to simulate glossy specular highlights.
       </p>
-      <img src="images/w2_ex4.png" alt="Phong shading result" />
-      <a class="code-link" href="w2_version4.html" target="_blank">Open version 4</a>
+
+      <p>
+        A new shader option was added that computes both diffuse and specular reflection.
+        The sphere uses a specular reflectance
+        <b>ρ<sub>s</sub> = (0.1, 0.1, 0.1)</b> and a shininess exponent <b>s = 42</b>.
+      </p>
+
+      <p>
+        The reflected light from the point light is approximated using the half-vector
+        formulation of the Phong model, allowing visible highlights even though
+        the light source has no physical size.
+      </p>
+
+      <img src="images/w2_ex4.png" alt="Worksheet 2 Exercise 4"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session2/4" target="_blank">
+          GitHub – Worksheet 2 / Exercise 4
+        </a>
+      </p>
     </section>
 
+
     <!-- Exercise 5 -->
-    <section class="exercise" id="ex5">
-      <h2>Exercise 5 — Glossy Shader</h2>
+    <section class="exercise" id="w2-ex5">
+      <h2>Exercise 5 — Glossy material</h2>
+
       <p>
-        The final part combined refraction and Phong reflection into one glossy shader.  
-        This shader makes the sphere both transparent and shiny, which looks like a polished glass material.  
-        We kept the material and scene data organized inside a single intersect scene function and passed all parameters through function arguments.  
-        This made the code modular and allowed all shading functions to work with any object type.  
-        The result is a visually rich scene with realistic light behavior.
+        The final exercise combines <b>Phong illumination</b> with <b>refraction</b>
+        to create a glossy glass material.
       </p>
-      <img src="images/w2_ex5.png" alt="Glossy shading result" />
-      <a class="code-link" href="w2_version5.html" target="_blank">Open version 5</a>
+
+      <p>
+        The glossy shader blends specular highlights with refracted rays,
+        producing a more realistic appearance.
+        All scene description data (objects, materials, shaders)
+        is handled inside a single <code>intersect_scene</code> function.
+      </p>
+
+      <p>
+        This ensures that the intersection and shading functions remain generic
+        and reusable for different scenes and materials.
+      </p>
+
+      <img src="images/w2_ex5.png" alt="Worksheet 2 Exercise 5"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session2/5" target="_blank">
+          GitHub – Worksheet 2 / Exercise 5
+        </a>
+      </p>
     </section>
+
 
   </main>
 

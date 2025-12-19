@@ -18,70 +18,114 @@
   <main class="session-content">
 
     <!-- Exercise 1 -->
-    <section class="exercise" id="ex1">
-      <h2>Exercise 1 — Load a texture and show it with different modes</h2>
+    <section class="exercise" id="w3-ex1">
+      <h2>Exercise 1 — Texture loading and sampling</h2>
+
       <p>
-        We wrote a function in JavaScript that loads an image without color space conversion and uploads it to a GPU texture. 
-        We displayed the texture directly on the image plane using the uv coordinates of the fragment. 
-        First we used clamp to edge addressing and nearest filtering. 
-        Then we added a small interface to switch between clamp to edge and repeat addressing and to switch between nearest and linear filtering.
+        In this exercise, I added support for loading an image file as a GPU texture
+        without color space conversion.
+        The texture is rendered directly using image plane (uv) coordinates.
       </p>
-      <img src="images/w3_ex1.png" alt="Texture shown with address and filter modes"/>
-      <a class="code-link" href="w3_version1.html" target="_blank">Open version 1</a>
+
+      <p>
+        I implemented different texture addressing modes (<b>clamp-to-edge</b> and <b>repeat</b>)
+        and filtering modes (<b>nearest</b> and <b>linear</b>), and added a simple interface
+        to switch between them at runtime.
+      </p>
+
+      <img src="images/w3_ex1.png" alt="Worksheet 3 Exercise 1 result"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session3/1" target="_blank">
+          GitHub – Worksheet 3 / Exercise 1
+        </a>
+      </p>
     </section>
+
 
     <!-- Exercise 2 -->
-    <section class="exercise" id="ex2">
-      <h2>Exercise 2 — Map the texture to the ground plane</h2>
+    <section class="exercise" id="w3-ex2">
+      <h2>Exercise 2 — Texture mapping on the plane</h2>
+
       <p>
-        We mapped the loaded texture to the plane in the default scene. 
-        We moved the texture look up to the scene intersection function so colors come from the material at the hit point. 
-        We added texture coordinates to the hit info structure. 
-        We used an orthonormal basis for the plane and computed the inverse mapping to get u and v from the hit position. 
-        We applied a scale factor of zero point two to control the size of the pattern. 
-        We used ninety percent of the texture color for the diffuse term and ten percent for the ambient term. 
-        We also added a toggle in the interface so we can turn texturing on or off.
+        In this exercise, I mapped the loaded texture onto the plane of the default scene.
+        Texture lookup was moved to the intersection stage by extending the <code>HitInfo</code>
+        structure with texture coordinates.
       </p>
-      <img src="images/w3_ex2.png" alt="Texture mapped plane with inverse mapping"/>
-      <a class="code-link" href="w3_version2.html" target="_blank">Open version 2</a>
+
+      <p>
+        Texture coordinates are computed using inverse mapping based on an orthonormal
+        basis (tangent, binormal, normal) of the plane.
+        A texture scaling factor is applied, and an interface allows texturing to be
+        enabled or disabled.
+      </p>
+
+      <img src="images/w3_ex2.png" alt="Worksheet 3 Exercise 2 result"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session3/2" target="_blank">
+          GitHub – Worksheet 3 / Exercise 2
+        </a>
+      </p>
     </section>
+
 
     <!-- Exercise 3 -->
-    <section class="exercise" id="ex3">
-      <h2>Exercise 3 — Stratified jitter sampling for anti aliasing</h2>
+    <section class="exercise" id="w3-ex3">
+      <h2>Exercise 3 — Stratified jitter sampling</h2>
+
       <p>
-        We reduced aliasing by sending several rays per pixel at jittered subpixel positions. 
-        In JavaScript we computed a list of small two dimensional offsets that place one sample inside each subpixel cell. 
-        We stored these offsets in a storage buffer on the GPU. 
-        In the fragment shader we looped over the offsets, displaced the image plane coordinates, traced a ray for each subpixel, and averaged the results. 
-        We added a control on the page that changes the number of subdivisions so we can compare the visual quality and the cost.
+        This exercise adds stratified jitter sampling for anti-aliasing.
+        Each pixel is subdivided into multiple sub-pixels, and a ray is cast
+        through each jittered sample position.
       </p>
-      <img src="images/w3_ex3.png" alt="Stratified jitter anti aliasing"/>
-      <a class="code-link" href="w3_version3.html" target="_blank">Open version 3</a>
+
+      <p>
+        Jitter offsets are computed in JavaScript and stored in a GPU storage buffer.
+        The fragment shader accumulates the radiance from all sub-pixels and averages
+        the result.
+        An interface allows changing the pixel subdivision level interactively.
+      </p>
+
+      <img src="images/w3_ex3.png" alt="Worksheet 3 Exercise 3 result"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session3/3" target="_blank">
+          GitHub – Worksheet 3 / Exercise 3
+        </a>
+      </p>
     </section>
 
+
     <!-- Exercise 4 -->
-    <section class="exercise" id="ex4">
-      <h2>Exercise 4 — Texture magnification and full interface</h2>
+    <section class="exercise" id="w3-ex4">
+      <h2>Exercise 4 — Texture scaling and aliasing</h2>
+
       <p>
-        We created a control to divide the texture scale by a value from one to ten which magnifies the texture by the same factor. 
-        The page interface now supports the following features. 
-        You can enable or disable texturing. 
-        You can choose address mode. 
-        You can choose filtering mode. 
-        You can change the texture scale. 
-        You can change the number of pixel subdivisions. 
-        You can change gamma if needed.
+        In the final exercise, I extended the interface to control the texture
+        scaling factor, allowing the texture to be magnified by a factor from 1 to 10.
       </p>
+
       <p>
-        Observations from experiments. 
-        When we magnify the texture, nearest filtering gives visible blocky pixels while linear filtering looks smoother. 
-        When the texture is minified, increasing the number of samples per pixel with stratified jitter reduces moiré patterns and shimmering. 
-        The base color shader is useful to study aliasing since it removes lighting variation and makes the texture pattern easier to judge.
+        The interface now supports toggling texturing, texture address mode,
+        filtering mode, pixel subdivision level, and gamma correction.
+        Different configurations were used to observe texture aliasing effects
+        and the impact of filtering and anti-aliasing.
       </p>
-      <img src="images/w3_ex4.png" alt="Magnification and UI controls"/>
-      <a class="code-link" href="w3_version4.html" target="_blank">Open version 4</a>
+
+      <img src="images/w3_ex4.png" alt="Worksheet 3 Exercise 4 result"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session3/4" target="_blank">
+          GitHub – Worksheet 3 / Exercise 4
+        </a>
+      </p>
     </section>
+
 
   </main>
 

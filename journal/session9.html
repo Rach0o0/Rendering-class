@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session 3 — Texture Mapping</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header class="subpage-header">
+    <h1>Session 9 — Environment Lighting</h1>
+    <p>
+      In this session, we use panoramic environment maps to light digital objects.
+      Instead of a constant background color, illumination comes from a photographed scene,
+      enabling more realistic reflections, shading, and shadows.
+    </p>
+  </header>
+
+
+  <main class="session-content">
+
+    <!-- Exercise 1 -->
+    <section class="exercise" id="ex1">
+      <h2>Exercise 1 — Panoramic environment map</h2>
+
+      <p>
+        Compared to previous worksheets, I replaced the uniform background color with a
+        <b>panoramic environment map</b>.
+        When a ray does not intersect any object, its direction is mapped to
+        texture coordinates and used to sample the environment texture.
+      </p>
+
+      <p>
+        This allows the background to represent a real photographed scene.
+        I loaded a triangle mesh (Stanford bunny / teapot) and added a selection menu
+        that lets the user switch between <b>base color</b>, <b>diffuse</b>, and <b>mirror</b> shading.
+      </p>
+
+      <img src="images/w9_ex1.png" alt="Exercise 1 result"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session9/1" target="_blank">
+          GitHub – Worksheet 9 / Exercise 1
+        </a>
+      </p>
+    </section>
+
+
+
+    <!-- Exercise 2 -->
+    <section class="exercise" id="ex2">
+      <h2>Exercise 2 — HDR environment lighting and holdout plane</h2>
+
+      <p>
+        Compared to Exercise 1, I replaced the low dynamic range environment map with a
+        <b>high dynamic range (HDR)</b> environment.
+        The HDR texture is loaded using <b>hdrpng.js</b> and decoded from RGBE format
+        to recover the original radiance values.
+      </p>
+
+      <p>
+        Direct light sources are removed so that illumination comes entirely from the environment.
+        This produces more realistic diffuse shading but requires many samples to converge.
+      </p>
+
+      <p>
+        To anchor the object in the scene, I added a <b>holdout plane</b>.
+        The object casts shadows onto this plane using an
+        <b>ambient occlusion shader</b>, computed by tracing rays over the hemisphere
+        around each surface point.
+      </p>
+
+      <img src="images/w9_ex2.png" alt="Exercise 2 result"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session9/2" target="_blank">
+          GitHub – Worksheet 9 / Exercise 2
+        </a>
+      </p>
+    </section>
+
+
+
+    <!-- Exercise 3 -->
+    <section class="exercise" id="ex3">
+      <h2>Exercise 3 — Sunlight with environment lighting</h2>
+
+      <p>
+        Compared to Exercise 2, I added a <b>directional light</b> to represent the sun
+        visible in the environment map.
+        The background uses a low dynamic range environment texture,
+        while the directional light provides strong, coherent illumination.
+      </p>
+
+      <p>
+        The object now casts shadows onto the holdout plane both because parts of the
+        environment are occluded and because the directional light can be blocked.
+        This combination improves depth perception and realism.
+      </p>
+
+      <img src="images/w9_ex3.png" alt="Exercise 3 result"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session9/3" target="_blank">
+          GitHub – Worksheet 9 / Exercise 3
+        </a>
+      </p>
+    </section>
+
+
+
+    <!-- Exercise 4 -->
+    <section class="exercise" id="ex4">
+      <h2>Exercise 4 — Custom HDR environment</h2>
+
+      <p>
+        Finally, I selected a custom HDR environment map from <b>Poly Haven</b>
+        and converted it to a compatible format using <b>hdrpng.js</b>.
+        The render resolution was changed to a wide aspect ratio
+        to better match the panoramic environment.
+      </p>
+
+      <p>
+        I adjusted the camera position and scale so that the digital object
+        is placed naturally within the photographed scene.
+        This exercise demonstrates how environment maps can be used to
+        integrate synthetic objects into real-world lighting conditions.
+      </p>
+
+      <img src="images/w9_ex4.png" alt="Exercise 4 result"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session9/4" target="_blank">
+          GitHub – Worksheet 9 / Exercise 4
+        </a>
+      </p>
+    </section>
+
+
+
+  </main>
+
+  <footer>
+    <a class="back" href="index.html">← Back to Home</a>
+  </footer>
+</body>
+</html>

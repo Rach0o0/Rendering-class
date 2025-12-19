@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session 3 — Texture Mapping</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header class="subpage-header">
+    <h1>Session 5 — Triangle Meshes & Area Lights</h1>
+    <p>
+      In this session, the ray tracer is extended to support complex geometry represented
+      as indexed triangle meshes loaded from OBJ files.
+      We move beyond simple analytic shapes and render full scenes composed of triangles,
+      including the Utah teapot and the Cornell box.
+      The session also introduces multiple materials and emissive geometry, allowing triangles
+      to act as area light sources.
+    </p>
+  </header>
+
+
+  <main class="session-content">
+
+    <!-- Exercise 1 -->
+    <section class="exercise">
+      <h2>Exercise 1 — Indexed triangle mesh</h2>
+
+      <p>
+        Compared to the previous worksheets, I switched from hard-coded geometry to an
+        <b>indexed face set</b> loaded from an OBJ file.
+        Using <code>OBJParser.js</code>, I loaded a simple triangle mesh and uploaded its data to the GPU.
+      </p>
+
+      <p>
+        Vertex positions are stored in a storage buffer, and triangle indices are stored in a separate
+        index buffer. The <code>intersect_triangle</code> function was modified to take a <b>face index</b>
+        instead of explicit vertex positions.
+      </p>
+
+      <p>
+        In the scene intersection function, I now loop over all faces in the indexed face set
+        to find the closest intersection.
+      </p>
+
+      <img src="images/w5_ex1.png" alt="Exercise 1 result" />
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session5/1" target="_blank">
+          GitHub – Worksheet 5 / Exercise 1
+        </a>
+      </p>
+    </section>
+
+
+    <!-- Exercise 2 -->
+    <section class="exercise">
+      <h2>Exercise 2 — Utah teapot and directional light</h2>
+
+      <p>
+        Building on Exercise 1, I replaced the simple triangle with the <b>Utah teapot</b> mesh.
+        The scene resolution was changed to 800×450, and the camera parameters were updated
+        to match the values provided in the worksheet.
+      </p>
+
+      <p>
+        The sphere intersection was removed, and the scene now consists only of triangles from
+        the indexed face set. The teapot is rendered with a constant diffuse color.
+      </p>
+
+      <p>
+        I also replaced the point light with a <b>directional light</b>.
+        The light direction and emitted radiance are fixed, and the shading uses Lambert’s cosine law.
+      </p>
+
+      <img src="images/w5_ex2.png" alt="Exercise 2 result" />
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session5/2" target="_blank">
+          GitHub – Worksheet 5 / Exercise 2
+        </a>
+      </p>
+    </section>
+
+
+
+    <!-- Exercise 3 -->
+    <section class="exercise">
+      <h2>Exercise 3 — Interpolated vertex normals</h2>
+
+      <p>
+        Compared to Exercise 2, I improved shading quality by using <b>interpolated vertex normals</b>
+        instead of flat triangle normals.
+      </p>
+
+      <p>
+        The OBJ parser provides per-vertex normals, which are uploaded to the GPU in a storage buffer.
+        Using the barycentric coordinates computed during ray–triangle intersection,
+        I interpolate the three vertex normals at the hit point.
+      </p>
+
+      <p>
+        This results in smooth shading across the surface of the teapot instead of visible faceting.
+      </p>
+
+      <img src="images/w5_ex3.png" alt="Exercise 3 result" />
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session5/3" target="_blank">
+          GitHub – Worksheet 5 / Exercise 3
+        </a>
+      </p>
+    </section>
+
+
+    <!-- Exercise 4 -->
+    <section class="exercise">
+      <h2>Exercise 4 — Cornell box and materials</h2>
+
+      <p>
+        The scene was changed again by loading the <b>Cornell box with blocks</b>.
+        This model uses real-world dimensions, so the camera configuration was updated
+        according to the worksheet instructions.
+      </p>
+
+      <p>
+        Each triangle in the mesh has an associated material index.
+        I created a <b>Material</b> struct in WGSL containing diffuse color and emission.
+        Material indices and material data are uploaded to the GPU using storage buffers.
+      </p>
+
+      <p>
+        At this stage, the scene is rendered using flat shading based on the sum of
+        diffuse color and emission.
+      </p>
+
+      <img src="images/w5_ex4.png" alt="Exercise 4 result" />
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session5/4" target="_blank">
+          GitHub – Worksheet 5 / Exercise 4
+        </a>
+      </p>
+    </section>
+
+    <section class="exercise">
+      <h2>Exercise 5 — Area lights from emissive triangles</h2>
+
+      <p>
+        Finally, I implemented lighting based on <b>emissive triangles</b> in the Cornell box.
+        Triangles with non-zero emission are treated as light sources.
+      </p>
+
+      <p>
+        Their indices are uploaded in a separate buffer (<code>light_indices</code>),
+        and the scene is shaded using a point-light approximation of these emissive areas.
+      </p>
+
+      <p>
+        The shading takes into account the distance, orientation, and area of the emitting triangles,
+        producing physically more meaningful illumination of the scene.
+      </p>
+
+      <img src="images/w5_ex5.png" alt="Exercise 5 result" />
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session5/5" target="_blank">
+          GitHub – Worksheet 5 / Exercise 5
+        </a>
+      </p>
+    </section>
+
+
+
+  </main>
+
+  <footer>
+    <a class="back" href="index.html">← Back to Home</a>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Page</title>
+<script type="text/javascript" src="MV.js"></script>
+<script src="Aabb.js"></script>
+<script src="BspTree_interleaved.js"></script>
+<script src="TimingHelper.js"></script>
+<script type="text/javascript" src="OBJParser_interleaved.js"></script>
+<script type="text/javascript" src="hdrpng.js"></script>
+
+<script type="text/javascript" src="myscript.js?v=9999"></script>
+<script id="wgsl" type="x-shader" src="shader.wgsl?v=9999"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #111;
+    color: #eee;
+}
+
+#app {
+    display: flex;
+    height: 100vh;
+}
+
+/* ================= Canvas ================= */
+#viewport {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+canvas {
+    border: 1px solid #333;
+}
+
+/* ================= UI Panel ================= */
+#ui {
+    width: 320px;
+    padding: 16px;
+    background: #1a1a1a;
+    border-left: 1px solid #333;
+    overflow-y: auto;
+}
+
+h2 {
+    font-size: 16px;
+    margin: 16px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #333;
+    color: #ffd27d;
+}
+
+.control {
+    margin-bottom: 12px;
+}
+
+.control label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: #ccc;
+}
+
+.control input[type="range"] {
+    width: 100%;
+}
+
+.control input[type="checkbox"] {
+    margin-right: 6px;
+}
+
+#frametime {
+    font-size: 13px;
+    color: #9fdcff;
+    margin-top: 8px;
+}
+</style>
+
+
+</head>
+<body>
+<div id="app">
+
+    <!-- ================= VIEWPORT ================= -->
+    <div id="viewport">
+        <canvas id="my-canvas" width="750" height="750">
+            Your browser does not support the HTML5 canvas tag.
+        </canvas>
+    </div>
+
+    <!-- ================= UI PANEL ================= -->
+    <div id="ui">
+
+        <h2>Rendering</h2>
+
+        <div class="control">
+            <label for="gamma-slider">Gamma</label>
+            <input id="gamma-slider" type="range" min="0.5" max="3.0" step="0.1" value="2.2">
+        </div>
+
+        <div class="control">
+            <label for="subdivs">Subdivisions</label>
+            <input id="subdivs" type="range" min="1" max="10" step="1" value="1">
+        </div>
+
+        <div class="control">
+            <label>
+                <input type="checkbox" id="progressive" checked>
+                Progressive rendering
+            </label>
+        </div>
+
+        <p id="frametime">Frame time: -- ms</p>
+
+        <h2>Camera</h2>
+
+        <div class="control">
+            <label for="zoom">Zoom</label>
+            <input id="zoom" type="range" min="0.2" max="3.0" step="0.01" value="1.0">
+        </div>
+
+        <div class="control">
+            <label for="aperture">Aperture</label>
+            <input id="aperture" type="range" min="0.0" max="0.05" step="0.001" value="0.0">
+        </div>
+
+        <div class="control">
+            <label for="focus">Focus distance</label>
+            <input id="focus" type="range" min="0.5" max="20.0" step="0.1" value="6.0">
+        </div>
+
+        <h2>Camera animations</h2>
+
+        <div class="control">
+            <label>
+                <input type="checkbox" id="autoFocus">
+                Auto focus (rack focus)
+            </label>
+        </div>
+
+        <div class="control">
+            <label>
+                <input type="checkbox" id="dolly">
+                Dolly shot
+            </label>
+        </div>
+
+        <div class="control">
+            <label>
+                <input type="checkbox" id="orbit">
+                Elliptical orbit
+            </label>
+        </div>
+
+    </div>
+</div>
+</body>
+
+</html>

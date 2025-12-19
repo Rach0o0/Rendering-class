@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Session 7 — Progressive Path Tracing</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <header class="subpage-header">
+    <h1>Session 7 — Progressive Path Tracing</h1>
+    <p>
+      In this session, we move from direct illumination to a more realistic rendering algorithm:
+      <b>progressive unidirectional path tracing</b>.
+      The goal is to add soft shadows and indirect lighting while keeping the GPU responsive by
+      progressively refining the image over many frames.
+    </p>
+  </header>
+
+  <main class="session-content">
+
+    <!-- Exercise 1 -->
+    <section class="exercise" id="ex1">
+      <h2>Exercise 1 — Progressive rendering and ping-pong textures</h2>
+
+      <p>
+        Compared to the previous worksheets, I introduced a <b>progressive rendering scheme</b>
+        using two textures in a ping-pong configuration.
+        One texture is used as a render target while the other stores the accumulated result from
+        the previous frame.
+      </p>
+
+      <p>
+        At each frame, the shader reads the previous image, adds a new randomly jittered sample,
+        and stores the <b>running average</b> of all samples.
+        The frame index and the canvas resolution are passed as uniforms and used to seed
+        a pseudo-random number generator on the GPU.
+      </p>
+
+      <p>
+        A checkbox allows enabling or disabling progressive updating.
+        When progressive mode is active, the image gradually converges and anti-aliased edges
+        appear without recomputing everything from scratch.
+      </p>
+
+      <img src="images/w7_ex1.png" alt="Progressive anti-aliasing result"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session7/1" target="_blank">
+          GitHub – Worksheet 7 / Exercise 1
+        </a>
+      </p>
+    </section>
+
+
+    <!-- Exercise 2 -->
+    <section class="exercise" id="ex2">
+      <h2>Exercise 2 — Monte Carlo area light sampling</h2>
+
+      <p>
+        In this exercise, I replaced the simplified area light sampling with
+        <b>Monte Carlo sampling</b> of the actual geometry of the light source.
+      </p>
+
+      <p>
+        A pointer to the random seed is passed through the shading functions,
+        allowing the area light to sample a <b>random triangle</b> and a
+        <b>random point on that triangle</b>.
+        This produces spatially varying illumination across the scene.
+      </p>
+
+      <p>
+        As a result, the Cornell box blocks cast <b>soft shadows</b> instead of
+        hard shadow boundaries, which is characteristic of extended light sources.
+      </p>
+
+      <img src="images/w7_ex2.png" alt="Soft shadows from area light"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session7/2" target="_blank">
+          GitHub – Worksheet 7 / Exercise 2
+        </a>
+      </p>
+    </section>
+
+
+    <!-- Exercise 3 -->
+    <section class="exercise" id="ex3">
+      <h2>Exercise 3 — Indirect illumination with path tracing</h2>
+
+      <p>
+        Finally, I extended the <b>HitInfo</b> structure with an emit flag and a
+        <b>throughput</b> factor to support indirect illumination.
+        The throughput accumulates the contribution of each bounce along the path.
+      </p>
+
+      <p>
+        I implemented <b>cosine-weighted hemisphere sampling</b> for Lambertian surfaces
+        and recursively traced secondary rays to estimate indirect lighting using
+        Monte Carlo integration.
+      </p>
+
+      <p>
+        This allows light to bounce between surfaces, producing realistic color bleeding
+        inside the Cornell box.
+        A toggle is provided to switch between a blue and a black background, and the
+        frame counter is reset whenever the scene configuration changes.
+      </p>
+
+      <img src="images/w7_ex3.png" alt="Indirect illumination result"/>
+
+      <p>
+        Source code:
+        <a href="https://github.com/Rach0o0/Rendering-class/tree/main/Session7/3" target="_blank">
+          GitHub – Worksheet 7 / Exercise 3
+        </a>
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <a class="back" href="index.html">← Back to Home</a>
+  </footer>
+
+</body>
+</html>
